@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Financial Records</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    h2 {
+      color: #444;
+      margin-bottom: 15px;
+    }
+    .record-section {
+      margin-bottom: 30px;
+    }
+    .record {
+      background: linear-gradient(to right, #d4af37, #b0b0b0);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      padding: 12px 16px;
+      color: #000;
+    }
+    .record-title {
+      font-weight: bold;
+    }
+    .record small {
+      display: block;
+      font-size: 12px;
+      color: #333;
+    }
+    .status-paid {
+      color: green;
+      font-weight: bold;
+    }
+    .status-pending {
+      color: orange;
+      font-weight: bold;
+    }
+    .status-declined {
+      color: red;
+      font-weight: bold;
+    }
+    .loading {
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Financial Records</h2>
+
+    <div class="record-section">
+      <h3>Recharge History</h3>
+      <div id="recharge-records">
+        <div class="loading">Loading recharge history...</div>
+      </div>
+    </div>
+
+    <div class="record-section">
+      <h3>Withdraw History</h3>
+      <div id="withdraw-records">
+        <div class="loading">Loading withdraw history...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // URL ya API yako
+    const API_URL = 'https://duckfarm-api.up.railway.app/api/records';
+    
+    // Function ya kupata data kutoka backend
+    async function loadRecords() {
+      try {
+        // Onyesha loading message
+        document.getElementById('recharge-records').innerHTML = '<div class="loading">Loading recharge history...</div>';
+        document.getElementById('withdraw-records').innerHTML = '<div class="loading">Loading withdraw history...</div>';
+        
+        const response = await fetch(API_URL);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        
+        const data = await response.json();
+        
+        // Display recharge records
+        const rechargeRecords = data.filter(item => item.type === 'recharge');
+        const rechargeDiv = document.getElementById('recharge-records');
+        
+        if (rechargeRecords.length > 0) {
+          rechargeDiv.innerHTML = rechargeRecords.map(item => `
+            <div class="record">
+              <div class="record-title">Tzs ${item.amount.toLocaleString()} 
+                <span class="status-${item.status}">${item.status.toUpperCase()}</span>
+              </div>
+              <small>Date: ${new Date(item.date).toLocaleDateString()} | Method: ${item.method}</small>
+            </div>
+          `).join('');
+        } else {
+          rechargeDiv.innerHTML = '<div>No recharge records found</div>';
+        }
+        
+        // Display withdraw records
+        const withdrawRecords = data.filter(item => item.type === 'withdraw');
+        const withdrawDiv = document.getElementById('withdraw-records');
+        
+        if (withdrawRecords.length > 0) {
+          withdrawDiv.innerHTML = withdrawRecords.map(item => `
+            <div class="record">
+              <div class="record-title">Tzs ${item.amount.toLocaleString()} 
+                <span class="status-${item.status}">${item.status.toUpperCase()}</span>
+              </div>
+              <small>Date: ${new Date(item.date).toLocaleDateString()} | Network: ${item.method}</small>
+            </div>
+          `).join('');
+        } else {
+          withdrawDiv.innerHTML = '<div>No withdraw records found</div>';
+        }
+        
+      } catch (error) {
+        console.error('Error loading data:', error);
+        document.getElementById('recharge-records').innerHTML = '<div style="color:red">Error loading recharge history</div>';
+        document.getElementById('withdraw-records').innerHTML = '<div style="color:red">Error loading withdraw history</div>';
+      }
+    }
+    
+    // Load data when page opens
+    window.addEventListener('DOMContentLoaded', loadRecords);
+  </script>
+</body>
+</html>

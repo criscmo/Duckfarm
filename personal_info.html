@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Information</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('Picsart_25-05-02_01-10-11-004.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      padding: 20px;
+    }
+
+    .form-container {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-container h2 {
+      text-align: center;
+      color: #2e7d32;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"], input[type="tel"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background-color: #f7f7f7;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #43a047;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2e7d32;
+    }
+
+    .notification {
+      margin-top: 20px;
+      background-color: #4caf50;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .error {
+      background-color: #f44336;
+    }
+
+    .loading {
+      background-color: #2196F3;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Personal Information</h2>
+    <form id="infoForm">
+      <input type="text" id="fullName" placeholder="Majina Matatu" required>
+      <input type="tel" id="mobile" placeholder="Mobile Number" required>
+      <input type="text" id="wallet" placeholder="Wallet Account" required>
+      <input type="password" id="loginPassword" placeholder="Login Password" required>
+      <input type="password" id="fundPassword" placeholder="Fund Password" required>
+      <button type="submit">Submit</button>
+    </form>
+    <div class="notification" id="notification"></div>
+  </div>
+
+  <script>
+    const API_URL = 'https://duckfarm-api.up.railway.app/api/users';
+    
+    // Function to show notification message
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = 'notification ' + type;
+      notification.style.display = 'block';
+      
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 4000);
+    }
+
+    // Function to get current user ID (you'll need to implement proper auth)
+    function getCurrentUserId() {
+      // In a real app, this should come from your authentication system
+      return localStorage.getItem('userId') || 'current-user-id';
+    }
+
+    document.getElementById('infoForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // Show loading state
+      showNotification("Inahifadhi taarifa...", 'loading');
+
+      const userData = {
+        userId: getCurrentUserId(),
+        fullName: document.getElementById('fullName').value.trim(),
+        mobile: document.getElementById('mobile').value.trim(),
+        wallet: document.getElementById('wallet').value.trim(),
+        loginPassword: document.getElementById('loginPassword').value,
+        fundPassword: document.getElementById('fundPassword').value,
+        updatedAt: new Date().toISOString()
+      };
+
+      try {
+        // Send data to backend
+        const response = await fetch(`${API_URL}/${userData.userId}/profile`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(userData)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save information');
+        }
+
+        const result = await response.json();
+        showNotification("Taarifa zimehifadhiwa kikamilifu!");
+        
+        // Optional: Redirect after successful save
+        // setTimeout(() => window.location.href = 'dashboard.html', 2000);
+        
+      } catch (error) {
+        console.error('Error saving information:', error);
+        showNotification("Hitilafu: " + error.message, 'error');
+      }
+    });
+
+    // Load existing user data if available
+    async function loadUserData() {
+      try {
+        const userId = getCurrentUserId();
+        const response = await fetch(`${API_URL}/${userId}/profile`);
+        
+        if (response.ok) {
+          const userData = await response.json();
+          
+          // Populate form fields
+          document.getElementById('fullName').value = userData.fullName || '';
+          document.getElementById('mobile').value = userData.mobile || '';
+          document.getElementById('wallet').value = userData.wallet || '';
+        }
+      } catch (error) {
+        console.log('Error loading user data:', error);
+      }
+    }
+
+    // Load user data when page loads
+    window.addEventListener('DOMContentLoaded', loadUserData);
+  </script>
+</body>
+</html>

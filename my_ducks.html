@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Ducks</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: linear-gradient(to bottom right, #d3d3d3, #87ceeb);
+      padding: 20px;
+      padding-bottom: 90px;
+      margin: 0;
+      position: relative;
+      overflow-x: hidden;
+    }
+    h1, h3, p {
+      background: linear-gradient(to right, black, gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .income-summary {
+      display: flex;
+      justify-content: space-around;
+      gap: 10px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+    .income-box {
+      background: black;
+      padding: 15px;
+      border-radius: 50%;
+      width: 90px;
+      height: 90px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 13px;
+      color: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #ducks-container {
+      max-height: 500px;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    .duck-card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .duck-card img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .empty-message {
+      margin-top: 40px;
+      font-weight: bold;
+      font-size: 16px;
+      text-align: center;
+      background: linear-gradient(to right, black, gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .feed-button {
+      background-color: #FFD700;
+      color: black;
+      border: none;
+      border-radius: 25px;
+      padding: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin: 10px 0;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #ccc;
+      padding: 10px 0;
+      z-index: 100;
+    }
+    .nav-item {
+      text-align: center;
+      font-size: 12px;
+      color: #555;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-item i {
+      font-size: 20px;
+      margin-bottom: 3px;
+    }
+    .nav-item.active {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+    @media (max-width: 480px) {
+      .income-summary {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body oncopy="return false" onpaste="return false" oncontextmenu="return false">
+  <h1>My Ducks</h1>
+  <div><p id="current-date-time"></p></div>
+
+  <div class="income-summary">
+    <div class="income-box">Today<br><span id="today-income">Tzs 0</span></div>
+    <div class="income-box">Monthly<br><span id="monthly-income">Tzs 0</span></div>
+    <div class="income-box">Annual<br><span id="annual-income">Tzs 0</span></div>
+  </div>
+
+  <div id="ducks-container"></div>
+  <div id="empty-msg" class="empty-message" style="display: none;">Hauna bata yeyote kwa sasa, tafadhali tembelea ukurasa wa soko kununua bata na ufurahie mapato yako ya kila siku.</div>
+
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="fas fa-home"></i><div>Home</div></div>
+    <div class="nav-item" onclick="window.location.href='task.html'"><i class="fas fa-tasks"></i><div>Task Area</div></div>
+    <div class="nav-item" onclick="window.location.href='profit.html'"><i class="fas fa-coins"></i><div>Profit</div></div>
+    <div class="nav-item" onclick="window.location.href='profile.html'"><i class="fas fa-user"></i><div>My</div></div>
+    <div class="nav-item active" onclick="window.location.href='my_ducks.html'"><div style="font-size: 20px;">🦆</div><div>My Ducks</div></div>
+  </div>
+
+  <script>
+    const API_URL = 'https://duckfarm-api.up.railway.app/api';
+    const ducksContainer = document.getElementById('ducks-container');
+    const todayIncome = document.getElementById('today-income');
+    const monthlyIncome = document.getElementById('monthly-income');
+    const annualIncome = document.getElementById('annual-income');
+
+    // Get user ID from authentication (you'll need to implement this)
+    function getUserId() {
+      // This should come from your authentication system
+      return localStorage.getItem('userId') || 'current-user-id';
+    }
+
+    async function fetchDucks() {
+      try {
+        const userId = getUserId();
+        const response = await fetch(`${API_URL}/users/${userId}/ducks`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch ducks data');
+        }
+        
+        const data = await response.json();
+        displayDucks(data);
+      } catch (error) {
+        console.error('Error fetching ducks:', error);
+        document.getElementById('empty-msg').style.display = 'block';
+        swal("Error", "Could not load your ducks. Please try again later.", "error");
+      }
+    }
+
+    function displayDucks(ducks) {
+      ducksContainer.innerHTML = '';
+      
+      if (!ducks || ducks.length === 0) {
+        document.getElementById('empty-msg').style.display = 'block';
+        return;
+      }
+
+      let totalDaily = 0;
+      let totalMonthly = 0;
+      let totalAnnual = 0;
+
+      ducks.forEach(duck => {
+        totalDaily += duck.dailyIncome || 0;
+        totalMonthly += (duck.dailyIncome || 0) * 30;
+        totalAnnual += (duck.dailyIncome || 0) * 365;
+
+        const card = document.createElement('div');
+        card.className = 'duck-card';
+        card.innerHTML = `
+          <img src="${duck.imageUrl || 'default-duck.png'}" alt="${duck.name || 'Duck'}">
+          <h3>${duck.name || 'My Duck'}</h3>
+          <p>Level: ${duck.level || 1}</p>
+          <p>Next Feeding: ${formatTime(duck.nextFeedingTime)}</p>
+          <button class="feed-button" onclick="feedDuck('${duck._id}')">Feed Now</button>
+        `;
+        ducksContainer.appendChild(card);
+      });
+
+      todayIncome.textContent = `Tzs ${totalDaily.toLocaleString()}`;
+      monthlyIncome.textContent = `Tzs ${totalMonthly.toLocaleString()}`;
+      annualIncome.textContent = `Tzs ${totalAnnual.toLocaleString()}`;
+    }
+
+    function formatTime(timestamp) {
+      if (!timestamp) return 'Now';
+      const date = new Date(timestamp);
+      return date.toLocaleTimeString();
+    }
+
+    async function feedDuck(duckId) {
+      try {
+        const userId = getUserId();
+        const response = await fetch(`${API_URL}/ducks/${duckId}/feed`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to feed duck');
+        }
+
+        const result = await response.json();
+        swal("Success!", `You earned Tzs ${result.earnedAmount} from feeding your duck!`, "success");
+        fetchDucks(); // Refresh the duck list
+      } catch (error) {
+        console.error('Error feeding duck:', error);
+        swal("Error", error.message || "Failed to feed duck", "error");
+      }
+    }
+
+    function updateDateTime() {
+      const now = new Date();
+      const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+      };
+      document.getElementById('current-date-time').textContent = now.toLocaleString(undefined, options);
+    }
+
+    // Initialize
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+    fetchDucks();
+  </script>
+</body>
+</html>

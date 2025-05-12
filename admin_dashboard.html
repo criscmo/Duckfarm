@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: black;
+      color: gold;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 10px;
+    }
+    .navbar {
+      display: flex;
+      background-color: #111;
+      padding: 10px 20px;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid gold;
+    }
+    .navbar h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+    .tab {
+      padding: 10px 20px;
+      margin: 5px;
+      background-color: #222;
+      border: 1px solid gold;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .tab:hover,
+    .tab.active {
+      background-color: gold;
+      color: black;
+    }
+    .content-section {
+      display: none;
+      padding: 20px;
+      border-top: 1px solid gold;
+    }
+    .content-section.active {
+      display: block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #111;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid gold;
+      text-align: left;
+    }
+    th {
+      background-color: gold;
+      color: black;
+    }
+    .action-btn {
+      padding: 6px 12px;
+      margin-right: 5px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .approve-btn {
+      background-color: green;
+      color: white;
+    }
+    .reject-btn {
+      background-color: red;
+      color: white;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 5;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.7);
+    }
+    .modal-content {
+      background-color: #222;
+      margin: 15% auto;
+      padding: 20px;
+      border: 2px solid gold;
+      width: 300px;
+      text-align: center;
+      border-radius: 10px;
+    }
+    .modal-content p {
+      margin-bottom: 20px;
+    }
+    .modal-content button {
+      padding: 8px 16px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .confirm-btn {
+      background-color: gold;
+      color: black;
+    }
+    .cancel-btn {
+      background-color: #444;
+      color: white;
+    }
+    .toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: gold;
+      color: black;
+      text-align: center;
+      border-radius: 8px;
+      padding: 16px;
+      position: fixed;
+      z-index: 10;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    .toast.show {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="navbar">
+      <h1>Admin Dashboard</h1>
+      <button onclick="showLogoutModal()" style="background: gold; color: black; padding: 6px 12px; border: none; border-radius: 4px;">Logout</button>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('users')">Users</div>
+      <div class="tab" onclick="switchTab('recharge')">Recharge</div>
+      <div class="tab" onclick="switchTab('withdraw')">Withdraw</div>
+      <div class="tab" onclick="switchTab('records')">Records</div>
+    </div>
+
+    <div id="users" class="content-section active"></div>
+    <div id="recharge" class="content-section"></div>
+    <div id="withdraw" class="content-section"></div>
+    <div id="records" class="content-section"></div>
+  </div>
+
+  <div id="logoutModal" class="modal">
+    <div class="modal-content">
+      <p>Are you sure you want to log out?</p>
+      <button class="confirm-btn" onclick="performLogout()">Yes</button>
+      <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Logged out successfully</div>
+
+  <script>
+    const BASE_URL = 'https://duckfarm-api.up.railway.app';
+
+    function switchTab(tabId) {
+      const tabs = document.querySelectorAll('.tab');
+      const sections = document.querySelectorAll('.content-section');
+      tabs.forEach(tab => tab.classList.remove('active'));
+      sections.forEach(sec => sec.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function showLogoutModal() {
+      document.getElementById('logoutModal').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('logoutModal').style.display = 'none';
+    }
+
+    function performLogout() {
+      closeModal();
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => {
+          window.location.href = "admin_login.html";
+        }, 300);
+      }, 2000);
+    }
+
+    async function loadData(endpoint, containerId) {
+      try {
+        const res = await fetch(`${BASE_URL}${endpoint}`);
+        const data = await res.json();
+        document.getElementById(containerId).innerHTML = data.html;
+      } catch (err) {
+        document.getElementById(containerId).innerHTML = "<p>Failed to load data</p>";
+      }
+    }
+
+    async function handleAction(button, status) {
+      const row = button.closest('tr');
+      const user = row.cells[0].innerText;
+      const amount = row.cells[1].innerText;
+
+      await fetch(`${BASE_URL}/api/action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user, amount, status })
+      });
+
+      row.cells[2].textContent = status;
+      row.cells[3].innerHTML = `<em>${status}</em>`;
+    }
+
+    window.onload = () => {
+      loadData('/api/users', 'users');
+      loadData('/api/recharge', 'recharge');
+      loadData('/api/withdraw', 'withdraw');
+      loadData('/api/records', 'records');
+    };
+  </script>
+</body>
+</html>

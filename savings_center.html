@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Savings Center - Duck Farm</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    .savings-container {
+      padding: 20px;
+    }
+
+    .card {
+      background: linear-gradient(to right, #c0c0c0, gold);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .card h2 {
+      margin-bottom: 10px;
+    }
+
+    .amount {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .action-buttons button {
+      flex: 1;
+      padding: 12px;
+      background-color: #333;
+      color: gold;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .action-buttons button:hover {
+      background-color: #111;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .history-table th,
+    .history-table td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    .history-table th {
+      background-color: #f4f4f4;
+    }
+
+    .entry-row {
+      background-color: #fff;
+    }
+
+    .note {
+      text-align: center;
+      font-size: 13px;
+      color: #888;
+      margin-top: 30px;
+    }
+
+    /* Kuzuia Copy, Cut, na Paste */
+    * {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    /* Kuzuia key events za copy/cut */
+    document.addEventListener('copy', function(e) {
+      e.preventDefault();
+    });
+    document.addEventListener('cut', function(e) {
+      e.preventDefault();
+    });
+    document.addEventListener('paste', function(e) {
+      e.preventDefault();
+    });
+  </style>
+</head>
+<body>
+
+  <div class="savings-container">
+
+    <div class="card">
+      <h2>My Savings Balance</h2>
+      <p class="amount">Tzs 0</p>
+    </div>
+
+    <div class="card">
+      <h2>Action</h2>
+      <div class="action-buttons">
+        <button onclick="alert('Deposit feature coming soon')">Deposit to Savings</button>
+        <button onclick="alert('Withdraw feature coming soon')">Withdraw from Savings</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Savings History</h2>
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Action</th>
+            <th>Amount (Tzs)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="entry-row">
+            <td>2025-04-28</td>
+            <td>Deposit</td>
+            <td>0</td>
+          </tr>
+          <tr class="entry-row">
+            <td>2025-04-26</td>
+            <td>Withdraw</td>
+            <td>0</td>
+          </tr>
+          <tr class="entry-row">
+            <td>2025-04-25</td>
+            <td>Deposit</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note">Unaweza kuweka akiba muda wowote na kuitoa kulingana na masharti ya duck farm.</p>
+
+  </div>
+
+</body>
+</html>

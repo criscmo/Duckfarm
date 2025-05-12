@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Referral Program - DUCK FARM</title>
+  <style>
+    body {
+      background: #f0f8ff;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h2 {
+      color: #0077b6;
+      margin-bottom: 10px;
+    }
+    #referral-link {
+      width: 80%;
+      padding: 10px;
+      margin-top: 10px;
+      border: 2px solid #0077b6;
+      border-radius: 10px;
+      font-size: 16px;
+      color: #333;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #00b4d8;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #0096c7;
+    }
+    .referral-summary {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .referral-summary p {
+      font-size: 16px;
+      margin: 8px 0;
+      color: #555;
+    }
+    #referral-warning {
+      background: #ffe0e0;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
+      color: #d00000;
+      font-weight: bold;
+      display: none;
+    }
+    .alert {
+      display: none;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      color: white;
+      font-weight: bold;
+      animation: fadeIn 0.5s ease-out;
+    }
+    .alert-success {
+      background-color: #4CAF50;
+    }
+    .alert-error {
+      background-color: #d32f2f;
+    }
+    .alert-info {
+      background-color: #00b4d8;
+    }
+    .alert-warning {
+      background-color: #ff9800;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Invite & Earn!</h2>
+
+  <div id="referral-info">
+    <p style="font-weight: bold;">Your Referral Link:</p>
+    <input type="text" id="referral-link" readonly />
+    <br />
+    <button onclick="copyReferralLink()">Copy Link</button>
+
+    <div class="referral-summary">
+      <h3 style="color: #0077b6; margin-top:20px;">Referral Earnings</h3>
+      <p>Level A Referrals: <span id="level-a">0</span></p>
+      <p>Level B Referrals: <span id="level-b">0</span></p>
+      <p>Level C Referrals: <span id="level-c">0</span></p>
+      <p><strong>Total Bonus:</strong> <span id="total-bonus">Tzs 0</span></p>
+    </div>
+  </div>
+
+  <div id="referral-warning">
+    You must upgrade to at least L1 to activate referral feature!
+  </div>
+
+  <div id="alert-container">
+    <div class="alert alert-success" id="alert-success">Referral link copied successfully!</div>
+    <div class="alert alert-error" id="alert-error">Error! Something went wrong.</div>
+    <div class="alert alert-info" id="alert-info">Loading your referral details...</div>
+    <div class="alert alert-warning" id="alert-warning">You need to login to see your referral link.</div>
+  </div>
+</div>
+
+<script>
+  window.onload = function() {
+    loadReferralData();
+  };
+
+  async function loadReferralData() {
+    showAlert('info');
+
+    try {
+      // Call your API to get the authenticated user's info
+      const res = await fetch("https://duckfarm-api.up.railway.app/api/user", {
+        credentials: "include", // Assumes session-based auth (like cookie)
+      });
+
+      if (!res.ok) {
+        throw new Error("Unauthorized");
+      }
+
+      const data = await res.json();
+
+      if (!data || !data.phone) {
+        throw new Error("No user data");
+      }
+
+      const userPhone = data.phone;
+
+      // Build referral link
+      const referralCode = btoa(userPhone); // Encode phone
+      const baseUrl = window.location.origin + "/signup.html";
+      const fullLink = `${baseUrl}?ref=${referralCode}`;
+
+      document.getElementById("referral-link").value = fullLink;
+      document.getElementById("referral-warning").style.display = 'none';
+
+      // Show referral stats
+      document.getElementById("level-a").innerText = data.referrals?.levelA || 0;
+      document.getElementById("level-b").innerText = data.referrals?.levelB || 0;
+      document.getElementById("level-c").innerText = data.referrals?.levelC || 0;
+      document.getElementById("total-bonus").innerText = `Tzs ${data.bonus || 0}`;
+
+    } catch (err) {
+      document.getElementById("referral-link").value = "Login required.";
+      document.getElementById("referral-warning").style.display = 'block';
+      showAlert('warning');
+    }
+  }
+
+  function copyReferralLink() {
+    const input = document.getElementById("referral-link");
+    input.select();
+    input.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    showAlert('success');
+  }
+
+  function showAlert(type) {
+    const types = ['success', 'error', 'info', 'warning'];
+    types.forEach(t => {
+      document.getElementById(`alert-${t}`).style.display = 'none';
+    });
+    document.getElementById(`alert-${type}`).style.display = 'block';
+
+    setTimeout(() => {
+      document.getElementById(`alert-${type}`).style.display = 'none';
+    }, 3000);
+  }
+</script>
+
+</body>
+</html>

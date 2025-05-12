@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Limit Reached</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .container {
+      max-width: 500px;
+      padding: 30px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #e53935;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+    .device-id {
+      font-size: 14px;
+      color: #666;
+      margin-top: 20px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Account Limit Reached</h1>
+    <p>You have reached the maximum number of accounts allowed for this device.</p>
+    <div class="device-id" id="deviceId"></div>
+  </div>
+
+  <script>
+    // API endpoint for checking device limits
+    const API_URL = 'https://duckfarm-api.up.railway.app/api/device-limits';
+    
+    // Function to generate a device fingerprint
+    function generateDeviceId() {
+      const navigatorKeys = ['userAgent', 'platform', 'hardwareConcurrency', 
+                           'deviceMemory', 'language', 'languages'];
+      const screenKeys = ['width', 'height', 'colorDepth', 'pixelDepth'];
+      
+      let fingerprint = '';
+      
+      // Add navigator info
+      navigatorKeys.forEach(key => {
+        if (navigator[key]) {
+          fingerprint += `${key}:${navigator[key]}|`;
+        }
+      });
+      
+      // Add screen info
+      screenKeys.forEach(key => {
+        if (screen[key]) {
+          fingerprint += `screen_${key}:${screen[key]}|`;
+        }
+      });
+      
+      // Add timezone
+      fingerprint += `timezone:${Intl.DateTimeFormat().resolvedOptions().timeZone}|`;
+      
+      return btoa(fingerprint).substring(0, 32);
+    }
+
+    // Check device limit with backend
+    async function checkDeviceLimit() {
+      const deviceId = generateDeviceId();
+      document.getElementById('deviceId').textContent = `Device ID: ${deviceId}`;
+      
+      try {
+        const response = await fetch(`${API_URL}/${deviceId}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to check device limit');
+        }
+        
+        const data = await response.json();
+        
+        if (data.limitReached) {
+          // Already showing limit reached message
+          console.log('Device limit reached');
+        } else {
+          // This shouldn't happen since user is seeing this page
+          console.warn('Device limit not reached but showing this page');
+        }
+      } catch (error) {
+        console.error('Error checking device limit:', error);
+      }
+    }
+
+    // Check device limit when page loads
+    window.addEventListener('DOMContentLoaded', checkDeviceLimit);
+  </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('Picsart_25-05-02_01-10-11-004.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: auto;
+      padding: 30px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      color: #ff5722;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    .input-group label {
+      color: #ff5722;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #ff5722;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      color: #333;
+      box-sizing: border-box;
+    }
+
+    .input-group input:focus {
+      border-color: #ffd700;
+      outline: none;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background-color: #e64a19;
+    }
+
+    .notification {
+      display: none;
+      background-color: #f44336;
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 15px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .notification.success {
+      background-color: #4caf50;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .footer a {
+      color: #ff5722;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Login</h1>
+    <div class="input-group">
+      <label for="phone">Phone Number</label>
+      <input type="text" id="phone" placeholder="Enter your phone number" required>
+    </div>
+    <div class="input-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter your password" required>
+    </div>
+    <button class="submit-btn" onclick="login()">Login Now</button>
+    <div class="notification" id="notification"></div>
+    <div class="footer">
+      <p>Don't have an account? <a href="signup.html">Register here</a></p>
+    </div>
+  </div>
+
+  <script>
+    function login() {
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+
+      fetch('https://duckfarm-api.up.railway.app/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ phone, password })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showNotification("Login successful!", true);
+          setTimeout(() => {
+            window.location.href = 'profile.html';
+          }, 2000);
+        } else {
+          showNotification(data.message || "Login failed.", false);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showNotification("Network error or server unreachable.", false);
+      });
+    }
+
+    function showNotification(message, isSuccess) {
+      const notification = document.getElementById('notification');
+      notification.innerText = message;
+      notification.className = 'notification ' + (isSuccess ? 'success' : '');
+      notification.style.display = 'block';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 4000);
+    }
+  </script>
+
+</body>
+</html>

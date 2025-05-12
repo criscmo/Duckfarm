@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Duck Farm Tasks</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* Styles unchanged */
+    body {
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+      padding-bottom: 90px;
+      margin: 0;
+    }
+    .plan-card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 30px;
+      max-width: 400px;
+    }
+    .plan-card img {
+      width: 100%;
+      border-radius: 10px;
+    }
+    .feed-button, .join-button {
+      padding: 12px 15px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .feed-button {
+      background-color: #000;
+      color: #FFD700;
+      margin-top: 10px;
+    }
+    .join-button {
+      background-color: #FFD700;
+      color: #000;
+    }
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .confirm-box, .message-box {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+    }
+    .confirm-box {
+      background: linear-gradient(to right, gold, black);
+    }
+    .message-box {
+      background: linear-gradient(to right, black, gold);
+    }
+    .confirm-box button {
+      margin-right: 10px;
+      background-color: black;
+      color: gold;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid #ccc;
+      padding: 10px 0;
+      z-index: 100;
+    }
+    .nav-item {
+      text-align: center;
+      font-size: 12px;
+      color: #555;
+    }
+    .nav-item i {
+      font-size: 20px;
+      margin-bottom: 3px;
+    }
+    .nav-item.active {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+    .feed-message {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to DUCK FARM!</h1>
+  <p>Feed your ducks daily and earn profits!</p>
+  <div id="plans-container"></div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="window.location.href='dashboard.html'">
+      <i class="fas fa-home"></i>
+      <div>Home</div>
+    </div>
+    <div class="nav-item active" onclick="window.location.href='task.html'">
+      <i class="fas fa-tasks"></i>
+      <div>Task Area</div>
+    </div>
+    <div class="nav-item" onclick="window.location.href='profit.html'">
+      <i class="fas fa-coins"></i>
+      <div>Profit</div>
+    </div>
+    <div class="nav-item" onclick="window.location.href='profile.html'">
+      <i class="fas fa-user"></i>
+      <div>My</div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'https://duckfarm-api.up.railway.app';
+    let balance = 0;
+    let joinedPlans = {};
+    const plansContainer = document.getElementById('plans-container');
+
+    const plans = [
+      { id: 'intern', name: 'Internship', price: 0, cycle: 5, daily: 900, total: 4500, feedLimit: 5, joinLimit: 1, image: '/aec2fd3a9780cc532a2efb339575da91.png' },
+      { id: 'l1', name: 'L1 - Starter Duck', price: 10000, cycle: 7, daily: 642.86, total: 16525, feedLimit: 7, joinLimit: 1, image: '/405de71cd532242ee36d47f970bec055.png' },
+      { id: 'l2', name: 'L2 - Worker Duck', price: 20000, cycle: 15, daily: 600, total: 29000, feedLimit: 15, joinLimit: 1, image: '/8349bf08edbcab58d02afcf757e50d24.png' },
+      { id: 'l3', name: 'L3 - Pro Duck', price: 40000, cycle: 30, daily: 600, total: 58000, feedLimit: 30, joinLimit: 1, image: '/b80e78f7f7a092f7678f1a39629a5da9.png' },
+      { id: 'l4', name: 'L4 - Senior Duck', price: 100000, cycle: 45, daily: 1000, total: 145000, feedLimit: 45, joinLimit: 1, image: '/32f06e40e695d49a73ffa954ee7658bb.png' },
+      { id: 'l5', name: 'L5 - Master Duck', price: 170000, cycle: 40, daily: 1912.5, total: 246500, feedLimit: 40, joinLimit: 1, image: '/811f232f7e36ba052ebc11ed118c0837.png' },
+      { id: 'l6', name: 'L6 - King Duck', price: 350000, cycle: 45, daily: 3500, total: 507500, feedLimit: 45, joinLimit: 1, image: '/b3adc219bad0ab61a4e5c96422fb8177.png' },
+      { id: 'l7', name: 'L7 - Emperor Duck', price: 660000, cycle: 60, daily: 4950, total: 957000, feedLimit: 60, joinLimit: 1, image: '/457677cdd0b783656d84a9955a80c57b.png' },
+      { id: 'l8', name: 'L8 - Legend Duck', price: 1200000, cycle: 60, daily: 9000, total: 1740000, feedLimit: 60, joinLimit: 1, image: '/cf0dfe34948a0f5bf0b5b32716556564.png' }
+    ];
+
+    async function fetchUserData() {
+      try {
+        const res = await fetch(`${API}/user`);
+        const data = await res.json();
+        balance = data.balance;
+        joinedPlans = data.joinedPlans || {};
+      } catch (err) {
+        console.error('Failed to fetch user data', err);
+      }
+    }
+
+    async function updateUserData() {
+      await fetch(`${API}/user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ balance, joinedPlans })
+      });
+    }
+
+    async function init() {
+      await fetchUserData();
+      renderPlans();
+    }
+
+    function renderPlans() {
+      plans.forEach(plan => {
+        const card = document.createElement('div');
+        card.className = 'plan-card';
+        card.innerHTML = `
+          <img src="${plan.image}" alt="${plan.name}">
+          <h3>${plan.name}</h3>
+          <p><strong>Price:</strong> Tzs ${plan.price.toLocaleString()}</p>
+          <p><strong>Cycle:</strong> ${plan.cycle} days</p>
+          <p><strong>Daily:</strong> Tzs ${plan.daily.toLocaleString()}</p>
+          <p><strong>Total Price:</strong> Tzs ${plan.total.toLocaleString()}</p>
+          <div class="feeding">
+            <p>Feeding Progress: <span id="feeding-${plan.id}">0/${plan.feedLimit}</span></p>
+            <button class="feed-button" onclick="feedDuck('${plan.id}', ${plan.feedLimit}, ${plan.daily})">Feed Now</button>
+          </div>
+          <div class="button-container">
+            <button class="join-button" onclick="showJoinConfirm('${plan.id}', ${plan.joinLimit})">Join Now</button>
+          </div>
+          <div class="confirm-box" id="confirm-${plan.id}" style="display:none;">
+            Are you sure you want to join the selected plan?<br><br>
+            <button onclick="confirmJoin('${plan.id}')">Yes</button>
+            <button onclick="cancelJoin('${plan.id}')">No</button>
+          </div>
+          <div class="message-box" id="message-${plan.id}" style="display:none;"></div>
+          <div class="feed-message" id="feed-message-${plan.id}" style="display:none;"></div>
+        `;
+        plansContainer.appendChild(card);
+        updateFeedingUI(plan.id, plan.feedLimit);
+      });
+    }
+
+    function updateFeedingUI(planId, feedLimit) {
+      const count = parseInt(localStorage.getItem(`${planId}-count`)) || 0;
+      document.getElementById(`feeding-${planId}`).innerText = `${count}/${feedLimit}`;
+    }
+
+    function showMessage(planId, msg) {
+      const box = document.getElementById(`message-${planId}`);
+      box.innerText = msg;
+      box.style.display = 'block';
+      setTimeout(() => (box.style.display = 'none'), 4000);
+    }
+
+    function showJoinConfirm(planId, joinLimit) {
+      if (balance < plans.find(p => p.id === planId).price) {
+        showMessage(planId, 'Insufficient balance. Please recharge.');
+        return;
+      }
+      if (joinedPlans[planId] >= joinLimit) {
+        showMessage(planId, `You have already joined this plan ${joinLimit} times.`);
+        return;
+      }
+      document.getElementById(`confirm-${planId}`).style.display = 'block';
+    }
+
+    function cancelJoin(planId) {
+      document.getElementById(`confirm-${planId}`).style.display = 'none';
+    }
+
+    async function confirmJoin(planId) {
+      const plan = plans.find(p => p.id === planId);
+      if (balance < plan.price) {
+        showMessage(planId, 'Insufficient balance. Please recharge.');
+        return;
+      }
+      if (joinedPlans[planId] === 1) {
+        showMessage(planId, `You have reached the maximum join limit for ${plan.name}.`);
+        return;
+      }
+      joinedPlans[planId] = (joinedPlans[planId] || 0) + 1;
+      balance -= plan.price;
+      await updateUserData();
+      document.getElementById(`confirm-${planId}`).style.display = 'none';
+      showMessage(planId, `Successfully joined the ${plan.name} plan.`);
+    }
+
+    async function feedDuck(planId, feedLimit, dailyProfit) {
+      const today = new Date().toISOString().split('T')[0];
+      const feedKey = `${planId}-fed-${today}`;
+      const countKey = `${planId}-count`;
+
+      if (localStorage.getItem(feedKey)) {
+        showMessage(planId, 'Maximum feeding reached. Please come back tomorrow.');
+        return;
+      }
+
+      if (!joinedPlans[planId]) {
+        showMessage(planId, 'You must join this plan to feed.');
+        return;
+      }
+
+      let feedCount = parseInt(localStorage.getItem(countKey)) || 0;
+      if (feedCount >= feedLimit) {
+        showMessage(planId, 'Your plan expired.');
+        return;
+      }
+
+      feedCount++;
+      localStorage.setItem(countKey, feedCount);
+      localStorage.setItem(feedKey, 'true');
+      updateFeedingUI(planId, feedLimit);
+
+      const feedMsg = document.getElementById(`feed-message-${planId}`);
+      feedMsg.innerText = `Congratulations! You have completed feeding your duck today Tzs ${dailyProfit.toLocaleString()}`;
+      feedMsg.style.display = 'block';
+      setTimeout(() => (feedMsg.style.display = 'none'), 4000);
+    }
+
+    init();
+  </script>
+</body>
+</html>

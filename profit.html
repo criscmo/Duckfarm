@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How Duck Farm Works for You</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1, h2 {
+      color: #2e7d32;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .section h3 {
+      font-size: 1.2em;
+      color: #2e7d32;
+    }
+    .section p {
+      font-size: 1em;
+      line-height: 1.6;
+      color: #555;
+    }
+    .table-container {
+      margin: 20px 0;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #2e7d32;
+      color: white;
+    }
+    td {
+      background-color: #f9f9f9;
+    }
+    .cta-wrapper {
+      max-width: 280px;
+      margin: 20px auto;
+    }
+    .cta-button {
+      background-color: #2e7d32;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      font-size: 1em;
+      cursor: pointer;
+      width: 100%;
+    }
+    .cta-button:hover {
+      background-color: #1c5e23;
+    }
+
+    /* Navigation Bar Styles */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid #ccc;
+      padding: 8px 0;
+      z-index: 100;
+      box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .nav-item {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+    }
+    .nav-item i {
+      font-size: 20px;
+      margin-bottom: 3px;
+    }
+    .nav-item.active {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+
+    /* Zuia Copy na Right Click */
+    body {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    /* Zuia Right-Click */
+    * {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    /* Zuia Shortcut za Copy/Cut */
+    body {
+      -webkit-touch-callout: none; /* Disable iOS callout */
+      -webkit-user-select: none;    /* Disable text selection */
+      -moz-user-select: none;       /* Firefox */
+      -ms-user-select: none;        /* Internet Explorer/Edge */
+      user-select: none;            /* Disable selection */
+    }
+    /* Kuzuia key events za copy/cut */
+    document.addEventListener('copy', function(e) {
+      e.preventDefault();
+    });
+    document.addEventListener('cut', function(e) {
+      e.preventDefault();
+    });
+    document.addEventListener('paste', function(e) {
+      e.preventDefault();
+    });
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Welcome to Duck Farm</h1>
+    <h2>How Duck Farm Works for You</h2>
+
+    <div class="section">
+      <h3>Faida ya Uwekezaji katika Duck Farm</h3>
+      <p>Duck Farm inakupa fursa ya kuongeza mapato yako ya kila siku. Huu ni mfumo rahisi na wa kuvutia wa kujenga biashara yako mwenyewe kwa kuwekeza katika kulea bata, huku unapata faida za kila siku. Nguvu yako ya kiuchumi inakua kupitia mipango mbalimbali, na kila mpango unatoa faida maalum na fursa za kuongeza mapato yako.</p>
+    </div>
+
+    <div class="section">
+      <h3>Faida za Kujiunga na Duck Farm</h3>
+      <ul style="text-align: left;">
+        <li><strong>Fursa ya Kuongeza Mapato:</strong> Pata mapato ya kila siku kwa kuweka bata yako kwenye mfumo wa Duck Farm.</li>
+        <li><strong>Uwekezaji wa Kiwango Kidogo:</strong> Unaweza kuanza na kiwango kidogo cha uwekezaji na kuongeza mapato yako kwa hatua kwa hatua.</li>
+        <li><strong>Msaada wa Kitaalamu:</strong> Utapata msaada wa kitaalamu kutoka kwa timu yetu ili kuhakikisha biashara yako ya bata inakua.</li>
+        <li><strong>Faida za Muda Mrefu:</strong> Kujiunga na mipango ya muda mrefu kutakupa faida za kila siku na kukuza biashara yako kwa muda mrefu.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>Mifano ya Mipango Yetu ya Uwekezaji</h3>
+      <div class="table-container">
+        <table>
+          <tr>
+            <th>Mpango</th>
+            <th>Bei</th>
+            <th>Muda wa Uwekezaji</th>
+            <th>Mapato ya Kila Siku</th>
+            <th>Mapato ya Jumla</th>
+          </tr>
+          <tr>
+            <td>Internship Plan</td>
+            <td>Tzs 0</td>
+            <td>5 Siku</td>
+            <td>Tzs 900</td>
+            <td>Tzs 4,500</td>
+          </tr>
+          <tr>
+            <td>L1 - Starter Duck</td>
+            <td>Tzs 10,000</td>
+            <td>7 Siku</td>
+            <td>Tzs 642.86</td>
+            <td>Tzs 16,525</td>
+          </tr>
+          <tr>
+            <td>L2 - Worker Duck</td>
+            <td>Tzs 20,000</td>
+            <td>15 Siku</td>
+            <td>Tzs 600</td>
+            <td>Tzs 29,000</td>
+          </tr>
+          <tr>
+            <td>L3 - Pro Duck</td>
+            <td>Tzs 40,000</td>
+            <td>30 Siku</td>
+            <td>Tzs 600</td>
+            <td>Tzs 58,000</td>
+          </tr>
+          <tr>
+            <td>L4 - Senior Duck</td>
+            <td>Tzs 100,000</td>
+            <td>45 Siku</td>
+            <td>Tzs 1,000</td>
+            <td>Tzs 145,000</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Jinsi Duck Farm Inavyokufanya Faida</h3>
+      <p>Kwa kujiunga na Duck Farm, unapata fursa ya kujenga mapato yako ya kila siku. Unapata mapato kutoka kwa bata zako unazozilea, na faida inajikusanya kila siku. Kuwekeza katika Duck Farm ni kuwekeza katika mustakabali wako wa kifedha.</p>
+    </div>
+
+    <div class="cta-wrapper">
+      <button class="cta-button">Jiunge na Duck Farm Leo na Anza Kupata Faida!</button>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="window.location.href='dashboard.html'">
+      <i class="fas fa-home"></i>
+      <div>Home</div>
+    </div>
+    <div class="nav-item" onclick="window.location.href='task.html'">
+      <i class="fas fa-tasks"></i>
+      <div>Task Area</div>
+    </div>
+    <div class="nav-item" onclick="window.location.href='profit.html'">
+      <i class="fas fa-coins"></i>
+      <div>Profit</div>
+    </div>
+    <div class="nav-item" onclick="window.location.href='profile.html'">
+      <i class="fas fa-user"></i>
+      <div>My</div>
+    </div>
+  </div>
+
+</body>
+</html>

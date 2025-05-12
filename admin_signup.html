@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Signup</title>
+  <style>
+    body {
+      background-color: black;
+      color: gold;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .signup-container {
+      background-color: #111;
+      padding: 40px;
+      border: 1px solid gold;
+      border-radius: 10px;
+      width: 300px;
+      box-shadow: 0 0 10px gold;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid gold;
+      border-radius: 5px;
+      background-color: black;
+      color: gold;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: gold;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #d4af37;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .login-link a {
+      color: gold;
+      text-decoration: underline;
+    }
+
+    .toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: gold;
+      color: black;
+      text-align: center;
+      border-radius: 8px;
+      padding: 16px;
+      position: fixed;
+      z-index: 10;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .toast.show {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="signup-container">
+    <h2>Admin Signup</h2>
+    <form onsubmit="signupAdmin(event)">
+      <label for="username">Username:</label>
+      <input type="text" id="username" required />
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" required />
+
+      <button type="submit">Register</button>
+    </form>
+    <div class="login-link">
+      Already registered? <a href="admin_login.html">Login</a>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    async function signupAdmin(event) {
+      event.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const response = await fetch("https://duckfarm-api.up.railway.app/api/admin/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          showToast("Registration successful!");
+          setTimeout(() => {
+            window.location.href = "admin_login.html";
+          }, 2000);
+        } else {
+          showToast(result.message || "Signup failed");
+        }
+      } catch (error) {
+        showToast("Server error");
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.className = "toast show";
+
+      setTimeout(() => {
+        toast.className = "toast";
+      }, 3000);
+    }
+  </script>
+
+</body>
+</html>

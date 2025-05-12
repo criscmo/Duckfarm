@@ -1,0 +1,209 @@
+<!-- MUANZO WA FILE ILIYOREKEBISHWA -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Signup</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* CSS yako haijabadilishwa kabisa */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('Picsart_25-05-02_01-10-11-004.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: auto;
+      padding: 30px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      color: #ff5722;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    .input-group label {
+      color: #ff5722;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #ff5722;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      color: #333;
+      box-sizing: border-box;
+    }
+
+    .input-group input:focus {
+      border-color: #ffd700;
+      outline: none;
+    }
+
+    .spinner {
+      display: block;
+      cursor: pointer;
+      width: 100%;
+      padding: 15px;
+      background: #ffd700;
+      color: black;
+      text-align: center;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+
+    .spinner:hover {
+      background-color: #ffe066;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background-color: #e64a19;
+    }
+
+    .notification {
+      display: none;
+      background-color: #4caf50;
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .footer a {
+      color: #ff5722;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Signup</h1>
+    <div class="input-group">
+      <label for="phone">Phone Number</label>
+      <input type="text" id="phone" placeholder="+255 Please enter your phone number" required>
+    </div>
+    <div class="input-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Please enter the login password" required>
+    </div>
+    <div class="input-group">
+      <label for="confirm-password">Confirm Password</label>
+      <input type="password" id="confirm-password" placeholder="Please confirm your password" required>
+    </div>
+    <div class="input-group">
+      <label for="verification-code">Verification Code</label>
+      <input type="text" id="verification-code" placeholder="Verification code will appear here" readonly>
+      <div class="spinner" onclick="generateCode()">Get New Code</div>
+    </div>
+    <div class="input-group">
+      <label for="invitation-code">Invitation Code</label>
+      <input type="text" id="invitation-code" value="Qtyzi" readonly required>
+    </div>
+    <button class="submit-btn" onclick="signup()">Register Now</button>
+    <div class="notification" id="notification"></div>
+    <div class="footer">
+      <p>Already have an account? <a href="login.html">Login here</a></p>
+    </div>
+  </div>
+
+  <script>
+    function signup() {
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const verificationCode = document.getElementById('verification-code').value;
+      const invitationCode = document.getElementById('invitation-code').value;
+
+      if (!phone || !password || !confirmPassword || !verificationCode || !invitationCode) {
+        showNotification("Please fill in all fields.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showNotification("Passwords do not match. Please try again.");
+        return;
+      }
+
+      const userData = {
+        phone,
+        password,
+        verificationCode,
+        invitationCode
+      };
+
+      fetch('https://duckfarm-api.up.railway.app/api/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          showNotification("Signup successful! Redirecting to login...");
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 2000);
+        } else {
+          showNotification(data.message || "Signup failed.");
+        }
+      })
+      .catch(() => {
+        showNotification("Network error. Try again later.");
+      });
+    }
+
+    function generateCode() {
+      const code = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('verification-code').value = code;
+      showNotification(`New verification code generated: ${code}`);
+    }
+
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      notification.innerText = message;
+      notification.style.display = 'block';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
+<!-- MWISHO WA FILE -->

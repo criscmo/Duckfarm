@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Envelope Code Entry</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0077b6, #caf0f8);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 80px;
+    }
+
+    .envelope-container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      width: 320px;
+      text-align: center;
+      margin-top: 50px;
+      margin-bottom: 30px;
+    }
+
+    .envelope-container h2 {
+      margin-bottom: 20px;
+      color: #0077b6;
+    }
+
+    .envelope-container input {
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .envelope-container button {
+      width: 100%;
+      padding: 12px;
+      background-color: #0077b6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .envelope-container button:hover {
+      background-color: #023e8a;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .success {
+      color: #28a745;
+    }
+
+    .error {
+      color: #dc3545;
+    }
+
+    .info {
+      color: #ffc107;
+    }
+
+    .winners-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      width: 320px;
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .winners-container h3 {
+      color: #0077b6;
+      margin-bottom: 15px;
+    }
+
+    .winner {
+      background: #caf0f8;
+      margin: 8px 0;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 15px;
+      color: #023e8a;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid #ccc;
+      padding: 10px 0;
+      z-index: 100;
+    }
+
+    .nav-item {
+      text-align: center;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .nav-item i {
+      font-size: 20px;
+      margin-bottom: 3px;
+    }
+
+    .nav-item.active {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="envelope-container">
+    <h2>Enter Your Envelope Code</h2>
+    <input type="text" id="codeInput" placeholder="Enter envelope code..." />
+    <button onclick="checkCode()">Submit</button>
+    <div class="message" id="message"></div>
+  </div>
+
+  <div class="winners-container">
+    <h3>Winners</h3>
+    <div id="winnersList">
+      <!-- Winners will appear here -->
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="window.location.href='dashboard.html'">
+      <i class="fas fa-home"></i>
+      <div>Home</div>
+    </div>
+    <div class="nav-item" onclick="window.location.href='task.html'">
+      <i class="fas fa-tasks"></i>
+      <div>Task Area</div>
+    </div>
+    <div class="nav-item" onclick="window.location.href='profit.html'">
+      <i class="fas fa-coins"></i>
+      <div>Profit</div>
+    </div>
+    <div class="nav-item" onclick="window.location.href='profile.html'">
+      <i class="fas fa-user"></i>
+      <div>My</div>
+    </div>
+  </div>
+
+  <script>
+    async function checkCode() {
+      const inputCode = document.getElementById("codeInput").value.trim();
+      const messageDiv = document.getElementById("message");
+
+      try {
+        const res = await fetch("https://duckfarm-api.up.railway.app/envelope", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ code: inputCode })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          messageDiv.innerHTML = "Conglomerate! You've snatched an envelope successfully!";
+          messageDiv.className = "message success";
+          displayWinners();
+        } else {
+          messageDiv.innerHTML = data.message || "Invalid envelope code. Try again!";
+          messageDiv.className = "message error";
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        messageDiv.innerHTML = "Server error. Please try again later.";
+        messageDiv.className = "message error";
+      }
+
+      document.getElementById("codeInput").value = "";
+    }
+
+    async function displayWinners() {
+      const winnersList = document.getElementById("winnersList");
+      winnersList.innerHTML = "";
+
+      try {
+        const res = await fetch("https://duckfarm-api.up.railway.app/envelope/winners");
+        const winners = await res.json();
+
+        winners.forEach((winner, index) => {
+          winnersList.innerHTML += `<div class="winner">#${index + 1} - Code: ${winner.code} <br> Time: ${winner.time}</div>`;
+        });
+      } catch (error) {
+        winnersList.innerHTML = `<div class="error">Failed to load winners.</div>`;
+      }
+    }
+
+    displayWinners();
+  </script>
+
+</body>
+</html>

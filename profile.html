@@ -1,0 +1,242 @@
+<!DOCTYPE html><html lang="sw">
+<head>
+  <meta charset="UTF-8" />
+  <title>Duck Farm - Profaili</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    .container {
+      max-width: 450px;
+      margin: 30px auto 80px;
+      padding: 25px;
+      background-color: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
+    }
+    .balance {
+      text-align: center;
+      font-size: 1.4em;
+      margin-bottom: 30px;
+      color: #2c3e50;
+      font-weight: bold;
+    }
+    .btn, .my-ducks-btn {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 12px 15px;
+      background: #ecf0f1;
+      border: 1px solid #3498db;
+      border-radius: 10px;
+      color: #2980b9;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    .btn i, .my-ducks-btn i {
+      margin-right: 12px;
+      color: #3498db;
+      font-size: 1.2em;
+    }
+    .btn:hover, .my-ducks-btn:hover {
+      background: #3498db;
+      color: white;
+    }
+    .btn:hover i, .my-ducks-btn:hover i {
+      color: white;
+    }
+    .spin-box {
+      border: 2px dashed #3498db;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      background: #f9f9f9;
+    }
+    .spin-box h3 {
+      margin: 0 0 10px;
+      font-size: 1.2em;
+      color: #3498db;
+      text-align: center;
+    }
+    .spin-box a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #3498db;
+      color: white;
+      font-weight: bold;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 10px;
+      transition: background 0.3s;
+    }
+    .spin-box a:hover {
+      background: #2980b9;
+    }
+    .spin-box a i {
+      margin-right: 8px;
+    }
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      background-color: #ecf0f1;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      padding: 10px 0;
+      border-top: 1px solid #ccc;
+      z-index: 1000;
+    }
+    .nav-item {
+      text-align: center;
+      font-size: 12px;
+      color: #7f8c8d;
+    }
+    .nav-item i {
+      font-size: 18px;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .nav-item.active {
+      color: #3498db;
+    }
+    .spin-nav {
+      color: #2980b9;
+      font-weight: bold;
+    }
+    .spin-nav i {
+      animation: bounce 1.5s infinite;
+      color: #3498db;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .modal-box {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 320px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    .modal-box h3 {
+      margin-bottom: 10px;
+      color: #e74c3c;
+    }
+    .modal-box button {
+      padding: 8px 16px;
+      margin: 10px 5px 0;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .modal-box .cancel-btn {
+      background: #bdc3c7;
+      color: #2c3e50;
+    }
+    .modal-box .logout-btn {
+      background: #e74c3c;
+      color: white;
+    }
+    #successModal .modal-box {
+      color: #2ecc71;
+    }
+    #successModal p {
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="balance" id="balance">Balance: Loading...</div>
+    <a href="my_ducks.html" class="my-ducks-btn"><span style="font-size: 1.5em;">🦆</span> My Ducks</a>
+    <a href="recharge.html" class="btn"><i class="fas fa-wallet"></i> Recharge</a>
+    <a href="withdraw.html" class="btn"><i class="fas fa-money-bill-wave"></i> Withdraw</a>
+    <a href="personal_info.html" class="btn"><i class="fas fa-user-circle"></i> Personal Info</a>
+    <a href="financial_records.html" class="btn"><i class="fas fa-clipboard-list"></i> Financial Records</a>
+    <a href="bonus.html" class="btn"><i class="fas fa-gift"></i> Bonus Program</a>
+    <a href="company_profile.html" class="btn"><i class="fas fa-building"></i> Company Profile</a>
+    <a href="referral.html" class="btn"><i class="fas fa-link"></i> Referral Program</a>
+    <div class="spin-box">
+      <h3>Cheza Spin Ujishindie Zawadi!</h3>
+      <a href="spin_wheel.html"><i class="fas fa-dice"></i> Ingia Spin & Win</a>
+    </div>
+    <a href="#" class="btn" onclick="showLogoutModal()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="location.href='dashboard.html'"><i class="fas fa-home"></i> Home</div>
+    <div class="nav-item" onclick="location.href='task.html'"><i class="fas fa-tasks"></i> Task Area</div>
+    <div class="nav-item spin-nav" onclick="location.href='spin_wheel.html'"><i class="fas fa-dice"></i> Spin</div>
+    <div class="nav-item" onclick="location.href='profit.html'"><i class="fas fa-coins"></i> Profit</div>
+    <div class="nav-item active" onclick="location.href='profile.html'"><i class="fas fa-user"></i> My</div>
+  </div>
+  <div id="logoutModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3><i class="fas fa-sign-out-alt"></i> Unataka kutoka?</h3>
+      <p>Una uhakika unataka kutoka kwenye akaunti yako?</p>
+      <button class="cancel-btn" onclick="closeLogoutModal()">Ghairi</button>
+      <button class="logout-btn" onclick="confirmLogout()">Ndiyo, Toka</button>
+    </div>
+  </div>
+  <div id="successModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3><i class="fas fa-check-circle" style="color: #2ecc71;"></i> Umefanikiwa!</h3>
+      <p>Umetoka kwenye akaunti yako salama. Asante kwa kutumia Duck Farm.</p>
+    </div>
+  </div>
+  <script>
+    const apiBase = 'https://duckfarm-api.up.railway.app';
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch(`${apiBase}/api/user/balance`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': 'Bearer TOKEN_HAPA'
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('balance').innerText = `Balance: Tzs ${data.balance}`;
+      })
+      .catch(err => {
+        console.error('Error fetching balance:', err);
+        document.getElementById('balance').innerText = `Balance: Haijapatikana`;
+      });
+    });
+    function showLogoutModal() {
+      document.getElementById("logoutModal").style.display = "flex";
+    }
+    function closeLogoutModal() {
+      document.getElementById("logoutModal").style.display = "none";
+    }
+    function confirmLogout() {
+      closeLogoutModal();
+      document.getElementById("successModal").style.display = "flex";
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

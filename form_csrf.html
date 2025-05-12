@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self';">
+    <title>CSRF Protection Form with reCAPTCHA</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #1c1c1c; /* Dark background */
+            margin: 0;
+            padding: 0;
+            color: #f4f4f9; /* Light text color */
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #212121; /* Dark background for container */
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border: 2px solid #f4c542; /* Gold border */
+        }
+        h1 {
+            text-align: center;
+            color: #f4c542; /* Gold color for heading */
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #f4c542; /* Gold for labels */
+        }
+        input[type="text"] {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #f4c542; /* Gold border for input */
+            font-size: 16px;
+            margin-bottom: 20px;
+            background-color: #333; /* Dark background for input */
+            color: #fff; /* White text in input */
+        }
+        input[type="submit"] {
+            background-color: #f4c542; /* Gold color for submit button */
+            color: black;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        input[type="submit"]:hover {
+            background-color: #e6b800; /* Slightly darker gold on hover */
+        }
+        .csrf-warning {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .g-recaptcha {
+            margin: 20px 0;
+        }
+    </style>
+    <!-- reCAPTCHA script -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Submit Your Information</h1>
+
+        <!-- CSRF Warning Message (Visible only if no token or incorrect token) -->
+        <div class="csrf-warning" style="display: none;" id="csrf-warning">
+            <strong>Warning:</strong> CSRF Token is missing or invalid. Please reload the page and try again.
+        </div>
+
+        <form action="submit_form.php" method="POST" id="csrfForm">
+            <!-- CSRF Token -->
+            <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+            
+            <label for="userInput">Enter Information:</label>
+            <input type="text" id="userInput" name="userInput" required>
+
+            <!-- reCAPTCHA -->
+            <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY_HERE"></div>
+            
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
+    <script>
+        // Example: JS to display the CSRF warning if necessary
+        const csrfForm = document.getElementById('csrfForm');
+        const csrfWarning = document.getElementById('csrf-warning');
+
+        csrfForm.addEventListener('submit', function (event) {
+            const csrfToken = csrfForm.querySelector('input[name="csrf_token"]').value;
+            
+            // Normally, you'd validate the CSRF token server-side, but let's simulate failure if it's empty
+            if (!csrfToken || csrfToken === 'invalid_token') {
+                event.preventDefault();
+                csrfWarning.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

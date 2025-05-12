@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <title>DuckFarm Spin Game</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      height: 100vh;
+      color: gold;
+    }
+    .dashboard {
+      margin-top: 20px;
+      background-color: #111;
+      border: 2px solid gold;
+      padding: 15px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .dashboard h3 {
+      margin: 5px 0;
+    }
+
+    #result {
+      margin-top: 15px;
+      font-size: 18px;
+      color: limegreen;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin-top: 30px;
+    }
+
+    #wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      overflow: hidden;
+      background: url('spin_wheel.png') no-repeat center center;
+      background-size: cover;
+      transition: transform 6s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    .pointer {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-bottom: 30px solid gold;
+      z-index: 2;
+    }
+
+    .spin-btn, .recharge-btn, .withdraw-btn {
+      margin-top: 15px;
+      padding: 12px 20px;
+      background-color: gold;
+      color: black;
+      border: none;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <h3>Spin Balance: <span id="spinBalance">0</span> TZS</h3>
+    <h3>Main Account: <span id="mainBalance">0</span> TZS</h3>
+    <h3>Number of Spins: <span id="spinCount">0</span></h3>
+  </div>
+  <div id="result"></div>
+  <div class="wheel-container">
+    <div id="wheel"></div>
+    <div class="pointer"></div>
+  </div>
+  <button class="spin-btn" onclick="spin()">SPIN</button> 
+  <button class="recharge-btn" onclick="rechargeSpin()">Recharge Spin</button> 
+  <button class="withdraw-btn" onclick="withdrawFunds()">Withdraw Spin Funds</button>
+
+  <audio id="chickSound" src="/Bird_sounds__duck,_owl,_swan,_goose,_eagle_-_Animal_moments(360p)(1).mp3"></audio>
+
+  <script>
+    let spinBalance = 0;
+    let mainBalance = 0;
+    let round = 1;
+    const spinCost = 5200;
+    const wheel = document.getElementById("wheel");
+    const resultDiv = document.getElementById("result");
+    const chickSound = document.getElementById("chickSound");
+    let spinCount = 0;
+
+    function updateBalances() {
+      document.getElementById("spinBalance").textContent = spinBalance;
+      document.getElementById("mainBalance").textContent = mainBalance;
+      document.getElementById("spinCount").textContent = spinCount;
+    }
+
+    function rechargeSpin() {
+      Swal.fire({
+        title: 'Huduma ya Recharge Spin!',
+        text: "Huduma hii itawezeshwa hivi karibuni. Tafadhali furahia huduma zetu nyingine.",
+        icon: 'info',
+        confirmButtonColor: '#d4af37',
+        confirmButtonText: 'Fahamu Zaidi'
+      });
+    }
+
+    function spin() {
+      if (spinCount <= 0) {
+        Swal.fire({
+          title: 'Oops!',
+          text: 'Huna spins zilizobaki. Tafadhali recharge.',
+          icon: 'warning',
+          confirmButtonColor: '#d4af37',
+          confirmButtonText: 'Fanya Recharge'
+        });
+        return;
+      }
+
+      spinBalance -= spinCost;
+      spinCount--;
+      wheel.style.transform = `rotate(${Math.random() * 360 + 1440}deg)`;
+      resultDiv.textContent = '';
+
+      setTimeout(() => {
+        let reward = 0;
+
+        if (round === 1) reward = 5000;
+        else if ([2, 3, 4].includes(round)) reward = 7000;
+        else if ([5, 6].includes(round)) reward = 1200;
+        else {
+          const cycle = (round - 1) % 6 + 1;
+          reward = cycle === 1 ? 5000 : (cycle <= 4 ? 7000 : 1200);
+        }
+
+        spinBalance += reward;
+        resultDiv.textContent = `Umeshinda: TZS ${reward.toLocaleString()}`;
+        round++;
+        chickSound.play(); // Play the new sound here
+        updateBalances();
+      }, 6200);
+    }
+
+    function withdrawFunds() {
+      Swal.fire({
+        title: 'Huduma ya Uhamishaji wa Salio Imezuiwa!',
+        text: "Kwa sasa, huduma ya uhamishaji wa salio la spin haitapatikana. Tafadhali furahia huduma nyingine.",
+        icon: 'error',
+        confirmButtonColor: '#d4af37',
+        confirmButtonText: 'Fahamu Zaidi'
+      });
+    }
+
+    updateBalances();
+  </script>
+</body>
+</html>
